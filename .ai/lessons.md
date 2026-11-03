@@ -13,3 +13,6 @@ i [CLAUDE.md](../CLAUDE.md).
   zaleceń sprawdź zgodność z bieżącym projektem; nie traktuj wymienionych tam
   pakietów i technologii jako istniejącej architektury AI Foodsale. Źródło:
   nagłówek i treść specyfikacji oraz [README.md](../README.md).
+- 2026-11-03: Wspólne zasady utrzymuj w `AGENTS.md`, a w `CLAUDE.md` pozostaw
+  import `@AGENTS.md` poza blokiem kodu. Pozwala to uniknąć rozbieżnych kopii;
+  składnię importu potwierdza [dokumentacja Claude Code](https://code.claude.com/docs/en/memory#import-additional-files).

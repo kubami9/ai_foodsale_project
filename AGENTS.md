@@ -2,8 +2,8 @@
 
 Te zasady obowiązują wszystkich asystentów pracujących w tym repozytorium.
 Zwracaj się do użytkownika „boss” lub „sensei”.
-Pliki `AGENTS.md` i `CLAUDE.md` muszą zawierać te same instrukcje; zmieniając
-zasady, aktualizuj oba w tym samym commicie.
+Wspólnym źródłem zasad jest `AGENTS.md`. Plik `CLAUDE.md` wczytuje go przez
+`@AGENTS.md`; utrzymuj ten import zamiast kopiować instrukcje do obu plików.
 
 ## Obowiązkowy początek pracy
 
@@ -13,6 +13,14 @@ zasady, aktualizuj oba w tym samym commicie.
    Nie zakładaj nowego dziennika tylko dlatego, że zmieniła się sesja, osoba lub data.
 3. Przeczytaj właściwą specyfikację przed implementacją. Sprawdź, czy dotyczy tego
    projektu i aktualnego zadania; nie przenoś założeń z obcych lub archiwalnych dokumentów.
+
+## Planowanie złożonych zadań
+
+- Przed złożonym zadaniem (np. zmiana wielu warstw lub architektury) zapisz krótki
+  plan w specyfikacji albo nagłówku dziennika: kroki, ryzyka i sposób weryfikacji.
+  Wyjaśnij niejasności wpływające na kryteria akceptacji przed implementacją.
+- Gdy wyniki podważają założenia lub prace schodzą z planu, zatrzymaj implementację,
+  ustal przyczynę i zaktualizuj plan przed dalszymi zmianami.
 
 ## Struktura `.ai/`
 
@@ -86,9 +94,10 @@ Pozostało: [konkretne prace albo brak].
 
 - `.ai/lessons.md` to punkt wejścia: zapisuj krótkie, przydatne w przyszłości
   ustalenia i linki do szczegółów w `.ai/lessons/slug.md`.
-- Po naprawieniu błędu, odkryciu pułapki albo usprawnieniu pracy zapisz trwały
-  wniosek, jeśli może zapobiec powtórzeniu problemu. Nie twórz wpisów bez wartości
-  dla kolejnych zadań ani kopii dziennika.
+- Po naprawieniu błędu, korekcie użytkownika, odkryciu pułapki albo usprawnieniu
+  pracy zapisz trwały wniosek, jeśli może zapobiec powtórzeniu problemu: przyczynę
+  i konkretną regułę zapobiegawczą. Zasady obowiązujące cały projekt przenieś do
+  `AGENTS.md`, zostawiając kontekst w lessons. Nie twórz kopii dziennika.
 - Podaj kontekst, wniosek, zalecane działanie oraz źródło lub sposób weryfikacji.
   Przed dodaniem sprawdź istniejące wpisy; uzupełniaj je zamiast tworzyć duplikaty.
   Nieaktualny wniosek oznacz jako zastąpiony i wskaż aktualne ustalenie.
@@ -101,6 +110,8 @@ ma aktualne cele, link i status oraz jest dodany do tego samego commita.
 Sprawdź zgodność zmian ze specyfikacją, jeśli istnieje, wykonaj właściwe dla zmian
 testy lub kontrolę dokumentacji i zapisz wynik. Zapisz nowe trwałe wnioski w lessons,
 jeśli wystąpiły. Nie twórz commita bez wpisu w dzienniku.
+Przy zmianie zachowania sprawdź zmieniony scenariusz i istotne przypadki brzegowe;
+podaj wykonane polecenia i wyniki. Sam przegląd kodu nie dowodzi jego działania.
 Przed zakończeniem sprawdź kryteria ukończenia, ustaw `Status: done` i uwzględnij
 to w końcowym commicie zadania. Niewykonane sprawdzenia i blokady opisz jawnie;
 nie oznaczaj nieukończonego zadania jako `done`.
