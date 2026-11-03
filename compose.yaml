@@ -1,0 +1,94 @@
+name: foodsale
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: foodsale
+      POSTGRES_PASSWORD: foodsale_local
+      POSTGRES_DB: foodsale_dev
+    ports:
+      - '127.0.0.1:${DB_PORT:-5433}:5432'
+    volumes:
+      - postgres_dev:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U foodsale -d foodsale_dev']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/Api.Dockerfile
+    environment:
+      DATABASE_URL: postgresql://foodsale:foodsale_local@db:5432/foodsale_dev
+    command: ['node', 'apps/api/dist/database/cli.js', 'migrate']
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    build:
+      context: .
+      dockerfile: docker/Api.Dockerfile
+    environment:
+      DATABASE_URL: postgresql://foodsale:foodsale_local@db:5432/foodsale_dev
+      PORT: 3000
+    ports:
+      - '127.0.0.1:${API_PORT:-3000}:3000'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  web:
+    build:
+      context: .
+      dockerfile: docker/Web.Dockerfile
+    ports:
+      - '127.0.0.1:${WEB_PORT:-8080}:80'
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1/']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  seed:
+    profiles: [demo]
+    build:
+      context: .
+      dockerfile: docker/Api.Dockerfile
+    environment:
+      DATABASE_URL: postgresql://foodsale:foodsale_local@db:5432/foodsale_dev
+      ALLOW_DEMO_SEED: 'true'
+    command: ['node', 'apps/api/dist/database/cli.js', 'seed']
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  db-test:
+    profiles: [test]
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: foodsale
+      POSTGRES_PASSWORD: foodsale_test
+      POSTGRES_DB: foodsale_test
+    ports:
+      - '127.0.0.1:${TEST_DB_PORT:-5434}:5432'
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U foodsale -d foodsale_test']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+volumes:
+  postgres_dev:

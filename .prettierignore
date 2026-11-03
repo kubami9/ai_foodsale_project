@@ -1,0 +1,9 @@
+package-lock.json
+node_modules/
+dist/
+.angular/
+playwright-report/
+test-results/
+.ai/cezar/
+.ai/runs/
+.ai/specs/2026-09-01-engineering-standards.md

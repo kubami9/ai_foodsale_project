@@ -1,0 +1,50 @@
+version: 2.1
+jobs:
+  verify:
+    docker:
+      - image: node:24.22.2-bookworm
+      - image: postgres:18-alpine
+        environment:
+          POSTGRES_USER: foodsale
+          POSTGRES_PASSWORD: foodsale_test
+          POSTGRES_DB: foodsale_test
+    environment:
+      TEST_DATABASE_URL: postgresql://foodsale:foodsale_test@127.0.0.1:5432/foodsale_test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-v1-{{ checksum "package-lock.json" }}
+      - run: npm ci
+      - save_cache:
+          key: npm-v1-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run:
+          name: Wait for the isolated test database
+          command: |
+            timeout 45 node --input-type=module <<'JS'
+            import { Pool } from 'pg';
+            const pool = new Pool({ connectionString: process.env.TEST_DATABASE_URL, connectionTimeoutMillis: 1000 });
+            for (let attempt = 0; attempt < 30; attempt++) {
+              try { await pool.query('SELECT 1'); break; }
+              catch (error) { if (attempt === 29) throw error; await new Promise(resolve => setTimeout(resolve, 1000)); }
+            }
+            await pool.end();
+            JS
+      - run: npm run test:integration
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - run: npm audit --omit=dev --audit-level=moderate
+      - store_artifacts:
+          path: playwright-report
+      - store_artifacts:
+          path: test-results
+workflows:
+  checks:
+    jobs:
+      - verify

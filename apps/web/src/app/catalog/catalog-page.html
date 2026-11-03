@@ -1,0 +1,122 @@
+<div class="page-container">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow"><span aria-hidden="true">●</span> Od ludzi, których możesz poznać</p>
+      <h1>Dobre jedzenie.<br /><em>Blisko Ciebie.</em></h1>
+      <p class="hero-description">
+        Małe gospodarstwa, rzemieślnicze pracownie i lokalne kuchnie. Odkryj smak, za którym stoi
+        człowiek.
+      </p>
+      <a class="hero-link" href="#produkty"
+        >Poznaj lokalne smaki <span aria-hidden="true">↓</span></a
+      >
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <span class="art-circle"></span><span class="hero-food">🥕</span
+      ><span class="hero-leaf">🌿</span
+      ><span class="harvest-note">Z dobrego miejsca.<br />W dobrych rękach.</span
+      ><span class="local-stamp">MAŁA SKALA<br />DUŻO SMAKU</span>
+    </div>
+  </section>
+  <section id="produkty" class="catalog-section" aria-labelledby="catalog-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Prosto od wytwórców</p>
+        <h2 id="catalog-title">Co dobrego w okolicy?</h2>
+      </div>
+      <span class="section-note">Sezonowo. Lokalnie. Z sercem.</span>
+    </div>
+    <form class="search-form" (submit)="search($event, searchInput.value)">
+      <label for="catalog-search" class="sr-only"
+        >Szukaj produktów, wytwórców lub miejscowości</label
+      >
+      <span aria-hidden="true">⌕</span
+      ><input
+        #searchInput
+        id="catalog-search"
+        type="search"
+        name="query"
+        maxlength="100"
+        [value]="store.query()"
+        placeholder="Szukaj produktu, wytwórcy lub miejscowości…"
+      /><button class="button" type="submit">Szukaj</button>
+    </form>
+    <div class="filter-bar">
+      <div class="category-filters" aria-label="Kategorie produktów">
+        <button
+          type="button"
+          [class.active]="store.category() === ''"
+          [attr.aria-pressed]="store.category() === ''"
+          (click)="store.update({ category: null })"
+        >
+          Wszystko
+        </button>
+        @for (category of categories; track category.id) {
+        <button
+          type="button"
+          [class.active]="store.category() === category.id"
+          [attr.aria-pressed]="store.category() === category.id"
+          (click)="store.update({ category: category.id })"
+        >
+          <span aria-hidden="true">{{ category.icon }}</span> {{ category.label }}
+        </button>
+        }
+      </div>
+      <label class="availability-filter"
+        ><input
+          #available
+          type="checkbox"
+          [checked]="store.availableOnly()"
+          (change)="store.update({ available: available.checked ? 'true' : null })"
+        />
+        Tylko dostępne</label
+      >
+    </div>
+    @if (store.state(); as state) { @switch (state.status) { @case ('loading') {
+    <app-feedback
+      title="Zaglądamy do lokalnych wytwórców…"
+      message="Za chwilę pokażemy ich produkty."
+    />
+    } @case ('error') {
+    <app-feedback
+      title="Nie możemy teraz pokazać produktów"
+      [message]="state.message"
+      [error]="true"
+      (retry)="store.retry()"
+    />
+    } @case ('loaded') {
+    <p class="result-count" role="status" aria-live="polite">
+      Znalezione produkty: {{ state.data.total }}
+    </p>
+    @if (state.data.items.length) {
+    <div class="product-grid">
+      @for (product of state.data.items; track product.id) {
+      <app-product-card [product]="product" /> }
+    </div>
+    } @else {
+    <app-feedback
+      title="Tym razem koszyk jest pusty"
+      message="Zmień wyszukiwane hasło lub wybierz inną kategorię."
+    /><a class="reset-link" routerLink="/">Wyczyść filtry</a> } @if (state.data.total >
+    state.data.pageSize || state.data.page > 1) {
+    <nav class="pagination" aria-label="Strony katalogu">
+      <button
+        class="button button-outline"
+        type="button"
+        [disabled]="state.data.page <= 1"
+        (click)="store.update({ page: state.data.page - 1 })"
+      >
+        ← Poprzednia</button
+      ><span>Strona {{ state.data.page }}</span
+      ><button
+        class="button button-outline"
+        type="button"
+        [disabled]="state.data.page * state.data.pageSize >= state.data.total"
+        (click)="store.update({ page: state.data.page + 1 })"
+      >
+        Następna →
+      </button>
+    </nav>
+    } } } }
+  </section>
+</div>

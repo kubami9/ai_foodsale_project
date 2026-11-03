@@ -1,0 +1,106 @@
+.product-card {
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper);
+  transition: transform 160ms;
+}
+.product-card:hover {
+  transform: translateY(-3px);
+}
+.product-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1.55;
+  overflow: hidden;
+  text-decoration: none;
+}
+.product-art::before {
+  content: '';
+  position: absolute;
+  width: 12rem;
+  height: 12rem;
+  border: 1px solid #ffffff70;
+  border-radius: 50%;
+}
+.food-icon {
+  font-size: 5.5rem;
+  filter: drop-shadow(0 12px 8px #55432920);
+  transform: rotate(-8deg);
+}
+.art-label {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #4c4b3d;
+}
+.availability {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 0.85rem;
+  background: #fffdf3e8;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.65rem;
+  border-radius: 2rem;
+  color: var(--forest);
+}
+.availability span {
+  font-size: 0.5rem;
+}
+.sold-out {
+  color: #796b5d;
+}
+.card-body {
+  padding: 1.15rem;
+}
+.seller-name {
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.seller-name span {
+  white-space: nowrap;
+}
+h3 {
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  letter-spacing: -0.025em;
+  margin: 0.4rem 0 1.4rem;
+}
+h3 a {
+  text-decoration: none;
+}
+.card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.card-bottom strong {
+  font-size: 1rem;
+  font-weight: 650;
+}
+.card-bottom p > span {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.round-link {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.round-link:hover {
+  background: var(--forest);
+  color: white;
+}

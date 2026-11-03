@@ -1,0 +1,11 @@
+.git
+.ai
+node_modules
+**/node_modules
+**/dist
+**/.angular
+.env
+.env.*
+playwright-report
+test-results
+coverage
