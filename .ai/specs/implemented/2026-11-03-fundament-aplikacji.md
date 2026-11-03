@@ -1,6 +1,6 @@
 # Fundament AI Foodsale
 
-Status: in-progress
+Status: done
 Data: 2026-11-03
 
 ## Cel i zakres
@@ -73,3 +73,16 @@ w rejestrze npm, porty konfigurowalne i osobne środowisko testowe.
   migracje poprzedzają API, seed wymaga osobnej komendy.
 - README opisuje instalację, uruchomienie, migracje, seed, testy, strukturę,
   ograniczenia i dalsze etapy. `CLAUDE.md` zachowuje import `@AGENTS.md`.
+
+## Wynik weryfikacji
+
+- Czyste `npm ci` i `npm audit`: zero podatności.
+- `npm run check`: lint, typecheck, 26 testów jednostkowych/HTTP i build przeszły.
+- `npm run test:integration`: 8 testów na prawdziwym PostgreSQL przeszło.
+- `TMPDIR=/tmp PLAYWRIGHT_CHROME_CHANNEL=chrome npm run test:e2e`:
+  10 scenariuszy desktop/mobile przeszło; obejrzano zrzuty obu widoków.
+- `npm run format:check` oraz walidacja Compose przeszły.
+- Obrazy Docker zbudowano i uruchomiono z healthcheckami; seed wykonano ponownie.
+  Smoke przez Nginx sprawdził 6 produktów, bezpośredni adres szczegółów i odświeżenie
+  bez błędów JavaScript. `npm run dev` sprawdzono także z API uruchamianym przez tsx.
+- CircleCI jest skonfigurowane; zewnętrznego przebiegu CI nie uruchamiano.

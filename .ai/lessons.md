@@ -16,3 +16,6 @@ i [CLAUDE.md](../CLAUDE.md).
 - 2026-11-03: Wspólne zasady utrzymuj w `AGENTS.md`, a w `CLAUDE.md` pozostaw
   import `@AGENTS.md` poza blokiem kodu. Pozwala to uniknąć rozbieżnych kopii;
   składnię importu potwierdza [dokumentacja Claude Code](https://code.claude.com/docs/en/memory#import-additional-files).
+- 2026-11-03: [Uruchamianie fundamentu aplikacji](lessons/fundament-aplikacji.md):
+  zgodna wersja Node, krótki TMPDIR dla Chrome w worktree i sprawdzony override
+  zależności narzędziowej po audycie npm.

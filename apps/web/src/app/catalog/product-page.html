@@ -1,0 +1,43 @@
+<div class="page-container detail-page">
+  <a routerLink="/" queryParamsHandling="preserve" class="back-link">← Wróć do produktów</a>
+  @if (store.state(); as state) { @switch (state.status) { @case ('loading') {
+  <app-feedback title="Poznajemy ten produkt…" /> } @case ('error') {
+  <app-feedback
+    title="Nie możemy pokazać tego produktu"
+    [message]="state.message"
+    [error]="true"
+    (retry)="store.retry()"
+  />
+  } @case ('loaded') {
+  <article class="product-detail">
+    <div class="detail-art" [style.background]="categories[state.data.category].color">
+      <span aria-hidden="true">{{ categories[state.data.category].icon }}</span>
+      <p>{{ categories[state.data.category].label }}</p>
+    </div>
+    <div class="detail-copy">
+      <p class="eyebrow">
+        {{ state.data.seller.city }} · {{ categories[state.data.category].label }}
+      </p>
+      <h1>{{ state.data.name }}</h1>
+      <p class="detail-price">
+        {{ state.data.priceGrosze / 100 | currency:'PLN':'symbol':'1.2-2':'pl' }}
+        <span>/ {{ state.data.unit }}</span>
+      </p>
+      <p class="stock" [class.sold-out]="!state.data.available">
+        ● {{ state.data.available ? 'Produkt dostępny' : 'Produkt obecnie wyprzedany' }}
+      </p>
+      <p class="description">{{ state.data.description }}</p>
+      <aside class="seller-panel" aria-label="O sprzedawcy">
+        <p class="eyebrow">Poznaj wytwórcę</p>
+        <h2>{{ state.data.seller.name }}</h2>
+        <p class="seller-city">{{ state.data.seller.city }}</p>
+        <p>{{ state.data.seller.description }}</p>
+      </aside>
+      <p class="demo-note">
+        To produkt demonstracyjny. Składanie zamówień i rezerwacje pojawią się w kolejnych etapach
+        projektu.
+      </p>
+    </div>
+  </article>
+  } } }
+</div>

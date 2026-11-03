@@ -1,0 +1,50 @@
+{
+  "name": "ai-foodsale",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24.15.0 <25",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "build:contracts": "npm run build --workspace @foodsale/contracts",
+    "predev": "npm run build:contracts",
+    "dev": "concurrently --kill-others --names contracts,api,web \"npm run dev --workspace @foodsale/contracts\" \"npm run dev --workspace @foodsale/api\" \"npm run dev --workspace @foodsale/web\"",
+    "build": "npm run build:contracts && npm run build --workspace @foodsale/api && npm run build --workspace @foodsale/web",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "pretypecheck": "npm run build:contracts",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.tools.json",
+    "pretest": "npm run build:contracts",
+    "test": "vitest run",
+    "pretest:integration": "npm run build:contracts",
+    "test:integration": "node --env-file-if-exists=.env.test ./node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
+    "pretest:e2e": "npm run build",
+    "test:e2e": "node --env-file-if-exists=.env.test ./node_modules/@playwright/test/cli.js test",
+    "db:up": "docker compose up -d --wait db",
+    "db:test:up": "docker compose --profile test up -d --wait db-test",
+    "db:migrate": "npm run db:migrate --workspace @foodsale/api",
+    "db:seed": "npm run db:seed --workspace @foodsale/api",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "@playwright/test": "1.64.1",
+    "@types/node": "^24.0.0",
+    "concurrently": "10.0.6",
+    "eslint": "10.14.0",
+    "prettier": "3.9.10",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0"
+  },
+  "overrides": {
+    "minimatch": "^11.0.4"
+  }
+}

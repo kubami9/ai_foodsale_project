@@ -77,6 +77,7 @@ Wzór dziennika (zastąp nawiasy kwadratowe własną treścią):
 # [Tytuł zadania]
 
 Cele:
+
 - [Cel i kryterium ukończenia]
 
 Specyfikacja: [nazwa](../specs/YYYY-MM-DD-slug.md)
@@ -85,6 +86,7 @@ Status: in-progress
 ## Historia commitów
 
 ### YYYY-MM-DD — [zakres commita]
+
 Decyzje / pułapki: [ustalenia albo brak].
 Weryfikacja: [wykonane sprawdzenia i wynik].
 Pozostało: [konkretne prace albo brak].
@@ -104,6 +106,13 @@ Pozostało: [konkretne prace albo brak].
 - Nie zapisuj sekretów, tokenów, haseł ani danych osobowych w dokumentacji.
 
 ## Kontrola przed commitem i zakończeniem
+
+Projekt używa npm workspaces: `apps/web` (Angular), `apps/api` (NestJS)
+i `packages/contracts` (Zod). Wersję Node określa `.nvmrc`.
+Uruchom `npm run check`; dla zmian API/bazy także `npm run test:integration`,
+a dla scenariuszy użytkownika `npm run test:e2e`. Przygotowanie bazy i środowiska
+opisuje `README.md`. Testy bazodanowe korzystają wyłącznie z `TEST_DATABASE_URL`
+i osobnej bazy z końcówką `_test`; nie kieruj ich na bazę deweloperską ani produkcyjną.
 
 Przed każdym commitem sprawdź, że dziennik zawiera przygotowany wpis 2–5 linii,
 ma aktualne cele, link i status oraz jest dodany do tego samego commita.

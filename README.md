@@ -1,34 +1,176 @@
-# AI Foodsale APP
+# AI Foodsale
 
-This is a full stack application for small scale sellers and homesteads (think homestead dairies, artisian cheesemakers, BBQ joints, bistros, garden to table restaurants) that allows them to sell their products to the public. The app features 2 roles: sellers and buyers.
+Platforma dla małych gospodarstw, rzemieślniczych wytwórców i lokalnych kuchni.
+Docelowo sprzedawcy będą zarządzać produktami, dostępnością i rezerwacjami, a kupujący
+odkrywać ofertę, kupować i kontaktować się bezpośrednio z wytwórcami.
 
-Sellers with their admin panel can easily list their products (and services) for sale, update and schedule their availability, provide additional information per product, show behind the scenes of making and manage reservations of tables and partial products.
+Projekt startowy zawiera działający publiczny katalog produktów: wyszukiwanie po
+nazwie, opisie, wytwórcy i miejscowości, kategorie, filtr dostępności, paginację
+API oraz szczegóły produktu i sprzedawcy. UI jest po polsku, działa na telefonie
+oraz obsługuje ładowanie, pusty wynik i błąd połączenia. Przykładowe dane są fikcyjne.
 
-Buyers can easily browse all the products (which are displayed in a very intuitive and clean form), read and perhaps even watch more about them, buy, book tables and contact the sellers.
+## Technologie i struktura
 
-It's basically something a bit of an e-commerce platform but geared completely towards small scale local sellers and homesteads that specilize in their own high quiality products that deserve not to be mixed with the ordinary and anonymous products and services of the global platforms. That, connected with a simple and intiutive option of tables managing software for restaurant-like places (like bistors or BBQ joints).
+- Angular 22, standalone components, routing, sygnały, TypeScript 6, SCSS i Tailwind 4.
+- Angular CLI i domyślny builder aplikacji: esbuild oraz Vite podczas developmentu.
+- NestJS 12, PostgreSQL 18, sterownik `pg`, parametryzowane zapytania i migracje SQL.
+- npm workspaces, Zod dla wspólnych kontraktów, Vitest, Playwright, ESLint i Prettier.
+- Docker Compose dla aplikacji i odseparowanej bazy testowej; CircleCI dla kontroli.
 
-### Tech stack
+```text
+apps/
+  web/src/app/
+    catalog/             # widoki, klient HTTP i stan katalogu
+    shared/              # wspólne stany ładowania/błędu i brak strony
+  api/src/
+    catalog/             # kontrakt repozytorium, serwis i cienki kontroler
+    config/              # walidacja środowiska
+    database/            # adapter PostgreSQL, migracje i seed
+    health/              # liveness i gotowość bazy
+    http/                # bezpieczne odpowiedzi błędów
+packages/contracts/      # wspólne schematy i typy; bez importów frameworków
+e2e/                    # scenariusze przeglądarkowe
+docker/                 # obrazy API i frontendu oraz reverse proxy Nginx
+.ai/                    # specyfikacje, dzienniki i trwałe wnioski
+```
 
-FE: newest Angular with TS and SCSS, Tailwind
-Build engine: to be decided, basically the simplest, best documented and fastest possible (perhaps vite?)
+Logika pozostaje w małych serwisach i funkcjach. Komponenty składają widoki,
+kontrolery obsługują HTTP, a repozytorium odpowiada za bazę. DI zapewnia Nest.
+Wspólne kontrakty nie zależą od Angulara, Nest ani bazy; ESLint pilnuje kierunku
+importów. Ogólne zasady z materiału DevMentor dopasowano do tego stosu;
+nie wprowadzono React, Next.js, Awilix ani spekulatywnej infrastruktury.
 
-BE: NestJS with TS
-DB: PostgreSQL
+## Wymagania
 
-Use docker for contenerization and ability to easily populate the DB and run tests on DB without the risk of wiping away real important data.
+- Node **24.22.2** (zgodny zakres: `>=24.15.0 <25`), npm 10+.
+- Docker z Docker Compose v2+.
 
-### Coding style and guideline
+Jeśli używasz nvm: `nvm install && nvm use`. Wersję określają `.nvmrc`
+i `.node-version`. `.npmrc` odrzuca instalację pod niezgodną wersją Node.
 
-Use standard best practices for software development. Components should be trivial to understand without much logic happening inside.
-Services should hold the logic. Simple and clear functions should be used a building blocks of logic, so that the services use clearly named functions and specific implementations can be inspected inside functions if needed. Functions should be pure if they can be and if they're not it should be clear they're not (clearly typed) so that the errors can be caught and accounted to. Every piece of logic should be short and clear enough that a tired software engineer should be easily able to inspect it and understand it. At the same time, reading code shouldn't require understanding all the implementation logic at once, since functions' names should be descriptive of what they do.
-Every function with logic should have it test (or multiple if needed) and so only the logic itself should be tested, NOT the implementation.
-We DO NOT test UI in the unit tests, unless there's is a good reason for that (e.g test buttons appear when we click the 'display buttons' button etc.).
-Every unit test should be straightforward and trivial to understand. No logic inside unit tests. Clarity above performance (unless the perormance loss is considerable).
+## Lokalny development
 
-Unit tests for testing units of logic (generally functions) in the app. They make sure that each function does indeed what is says reliably.
-E2E test with circleCI for testing workflows and user's behaviour. They make sure that basic and common workflows stay stable and working.
+Uruchom z katalogu głównego repozytorium:
 
-### Before any change
+```bash
+npm ci
+cp .env.example .env
+cp .env.test.example .env.test
+npm run db:up
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
 
-Make sure you have a clear picture of the logic needed in place and write tests that test exactly for the kind of logic we need. Tests that can fail only if the logic is wrong and that succeed only based on that logic working. If a test can fail despite the app technically working as it should, such test is useless and shouldn't be there at all.
+Frontend: **http://localhost:4200**, API: **http://localhost:3000/api**.
+Angular proxy przekazuje `/api` do lokalnego backendu. `.env` nie trafia do Git.
+Przykładowe hasła służą wyłącznie lokalnym, demonstracyjnym kontenerom.
+Bez seeda katalog jest pusty, ale działa poprawnie.
+
+Migracje wykonuj jawnie: `npm run db:migrate`. Wykonywane migracje są zapisywane
+z sumą kontrolną, a kolejne uruchomienie ich nie powtarza. Nie edytuj zastosowanych
+migracji: dodaj następny numerowany plik SQL. Cały przebieg jest transakcyjny
+z blokadą przed równoległym wykonaniem.
+
+Seed `npm run db:seed` wymaga `ALLOW_DEMO_SEED=true` oraz nazwy bazy zakończonej
+`_dev` lub `_test`. Dodaje brakujące rekordy bez czyszczenia tabel i bez nadpisywania
+zmienionych danych. Zmiana danych przykładowych wymaga świadomej migracji lub nowego ID.
+
+## Cała aplikacja w Dockerze
+
+```bash
+docker compose up --build -d --wait
+# Opcjonalnie dodaj fikcyjne produkty i sprzedawców:
+docker compose --profile demo run --rm seed
+```
+
+Aplikacja: **http://localhost:8080**. Nginx serwuje Angular i przekazuje `/api`
+do Nest. PostgreSQL ma trwały wolumen; migracje kończą się przed startem API.
+Seed nie uruchamia się automatycznie. Kontenery bazy, API i frontendu mają healthchecki.
+Kontener API działa jako użytkownik `node`. To konfiguracja lokalna, bez TLS
+ani integracji produkcyjnych.
+
+`docker compose down` zatrzymuje aplikację i zachowuje bazę. Nie dodawaj `-v`,
+jeśli chcesz zachować dane. Baza testowa używa tmpfs i jest odtwarzalna.
+
+Domyślne porty hosta: baza 5433, baza testowa 5434, API 3000, web 8080.
+Można je zmienić zmiennymi `DB_PORT`, `TEST_DB_PORT`, `API_PORT`, `WEB_PORT` dla
+Compose. Przy zmianie portów lokalnego developmentu dostosuj również `.env`
+i `apps/web/proxy.conf.json`.
+
+## API
+
+Wszystkie endpointy są publiczne i wyłącznie do odczytu:
+
+| Metoda i ścieżka          | Wynik                                              |
+| ------------------------- | -------------------------------------------------- |
+| `GET /api/health`         | Stan procesu; nie wymaga dostępnej bazy            |
+| `GET /api/health/ready`   | Sprawdzenie połączenia PostgreSQL; 503 przy awarii |
+| `GET /api/products`       | `{ items, total, page, pageSize }`                 |
+| `GET /api/products/:uuid` | Produkt z informacją o sprzedawcy; 404 gdy brak    |
+
+Filtry: `query` (maks. 100 znaków), `category` (`dairy`, `bakery`, `produce`,
+`pantry`, `meals`), `available` (`true`/`false`), `page` (1–10000), `pageSize`
+(1–100, domyślnie 12). Filtry łączą się; sortowanie jest stabilne po nazwie i UUID.
+Wyszukiwanie ignoruje wielkość liter; nie pomija polskich znaków diakrytycznych.
+
+```bash
+curl 'http://localhost:3000/api/products?category=dairy&available=true'
+```
+
+Odpowiedź sukcesu: `{ "ok": true, "data": ... }`.
+Błąd: `{ "ok": false, "error": { "code": "...", "message": "..." } }`.
+Walidacja zwraca 400, brak produktu 404, niedostępna baza 503. Szczegóły połączenia
+ani zapytań SQL nie są zwracane klientowi. Kwoty są liczbą całkowitą groszy, np.
+`2400` oznacza 24,00 zł; waluta to PLN. Dostępność wynika ze stanu magazynowego > 0.
+
+## Weryfikacja i testy
+
+```bash
+npm run check                 # lint, typecheck, unit/API tests i produkcyjny build
+npm run db:test:up            # osobny PostgreSQL: foodsale_test na porcie 5434
+npm run test:integration      # rzeczywista baza: migracje, seed, filtry i paginacja
+npx playwright install chromium
+npm run test:e2e              # Chrome desktop + mobilny viewport, start API i Angular
+npm audit
+```
+
+Przy zainstalowanym Google Chrome możesz pominąć pobieranie Chromium i użyć:
+
+```bash
+TMPDIR=/tmp PLAYWRIGHT_CHROME_CHANNEL=chrome npm run test:e2e
+```
+
+Testy integracyjne i E2E używają **wyłącznie `TEST_DATABASE_URL`**, wymagają nazwy
+bazy zakończonej `_test` i nie korzystają z `DATABASE_URL`. Domyślnie czytają
+`.env.test`. Nie wskazuj w nim żadnej bazy z istotnymi danymi: te testy utrzymują
+własne dane demonstracyjne. Nie usuwają bazy deweloperskiej.
+
+E2E sam uruchamia API na 3100 i Angular na 4300, przygotowuje migracje i seed,
+a następnie zamyka serwery. Te dwa porty muszą być wolne. Scenariusze obejmują
+wyszukiwanie, filtry, szczegóły z odświeżeniem strony, powrót z zachowaniem filtrów,
+pusty wynik, niedostępne API i ponowienie. Jednostkowo testujemy zachowanie logiki
+i kontraktów; UI sprawdzamy przez scenariusze użytkownika, bez testów szczegółów DOM.
+
+CircleCI (`.circleci/config.yml`) uruchamia te same kontrole, własny PostgreSQL
+oraz Playwright i przechowuje raport HTML. Plik jest gotowy do podłączenia
+repozytorium do CircleCI; lokalna weryfikacja nie uruchamia usługi CI.
+
+`minimatch` ma tymczasowy override na `^11.0.4`: usuwa zgłoszenie
+GHSA-g3hv-75wg-m249 z zależności narzędzi ESLint. Po aktualizacji tych narzędzi
+sprawdź, czy override nadal jest potrzebny. Nie cofaj lintera do starej wersji
+sugerowanej przez `npm audit fix --force`.
+
+## Dalsze etapy
+
+1. Konta kupujących i sprzedawców, bezpieczne sesje i sprawdzanie właściciela zasobów.
+2. Panel sprzedawcy: oferta, opisy i media, planowanie dostępności.
+3. Zakupy, rezerwacje produktów oraz stolików z ochroną przed podwójną rezerwacją.
+4. Płatności przez port integracji, kontakt kupującego z wytwórcą.
+
+Żaden z tych etapów nie jest obecnie zaimplementowany. Publiczne endpointy zapisu
+pojawią się razem z kontrolą dostępu. Dalsze funkcje prowadź przez SDD i kryteria
+akceptacji, bez tworzenia pustych modułów na zapas.
+
+Zasady pracy: [AGENTS.md](AGENTS.md); Claude Code wczytuje je przez `CLAUDE.md`.
+Specyfikacje, dzienniki i pamięć projektu znajdują się w `.ai/`.

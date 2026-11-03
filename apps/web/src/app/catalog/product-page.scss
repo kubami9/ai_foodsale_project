@@ -1,0 +1,101 @@
+.detail-page {
+  padding-top: 2rem;
+}
+.back-link {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-decoration: none;
+  margin-bottom: 2rem;
+}
+.product-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+.detail-art {
+  min-height: 30rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.detail-art span {
+  font-size: 10rem;
+  filter: drop-shadow(0 14px 12px #58422d30);
+}
+.detail-art p {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  margin-top: 2rem;
+}
+h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  margin: 1rem 0;
+}
+.detail-price {
+  font-size: 1.7rem;
+  color: var(--forest);
+}
+.detail-price span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.stock {
+  font-size: 0.75rem;
+  margin-top: 0.75rem;
+  color: var(--forest);
+}
+.sold-out {
+  color: #876953;
+}
+.description {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin: 1.75rem 0;
+}
+.seller-panel {
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+}
+h2 {
+  font-family: Georgia, serif;
+  font-size: 1.4rem;
+  margin: 0.5rem 0;
+}
+.seller-city {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.seller-panel > p:last-child {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.demo-note {
+  font-size: 0.75rem;
+  padding: 1rem;
+  background: #ede8d7;
+  border-radius: 0.5rem;
+  line-height: 1.6;
+  margin-top: 2rem;
+}
+@media (max-width: 760px) {
+  .product-detail {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .detail-art {
+    min-height: 16rem;
+  }
+  .detail-art span {
+    font-size: 7rem;
+  }
+}
